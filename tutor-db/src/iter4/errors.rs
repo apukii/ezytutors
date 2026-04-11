@@ -49,3 +49,21 @@ impl error::ResponseError for EzyTutorError {
         })
     }
 }
+
+impl fmt::Display for EzyTutorError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+        write!(f, "{}", self)
+    }
+}
+
+impl From<actix_web::error::Error> for EzyTutorError {
+    fn from(err: actix_web::error::Error) -> Self {
+        EzyTutorError::ActixError(err.to_string())
+    }
+}
+
+impl From<SQLxError> for EzyTutorError {
+    fn from(err: SQLxError) -> Self {
+        EzyTutorError::DBError(err.to_string())
+    }
+}
