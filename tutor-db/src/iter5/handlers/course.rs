@@ -1,9 +1,7 @@
-use crate::state::AppState;
 use crate::dbaccess::course::*;
 use crate::errors::EzyTutorError;
-use crate::models::course::Course;
-// use std::convert::TryFrom;
-
+use crate::models::course::{CreateCourse, UpdateCourse};
+use crate::state::AppState;
 use actix_web::{web, HttpResponse};
 
 
@@ -23,13 +21,37 @@ pub async fn get_course_details(app_state: web::Data<AppState>, path: web::Path<
 
 /* curl -X POST localhost:3000/courses/ \
 -H "Content-Type: application/json" \
- -d '{"tutor_id":1, "course_name":"Hello there customer 1 !"}'
+ -d '{"tutor_id":1, "course_name":"Hello there custmer 1 !"}'
 */
-pub async fn post_new_course(new_course: web::Json<Course>, app_state: web::Data<AppState>,) -> Result<HttpResponse, EzyTutorError> {
-    post_new_course_db(&app_state.db, new_course.into())
+pub async fn post_new_course(new_course: web::Json<CreateCourse>, app_state: web::Data<AppState>,) -> Result<HttpResponse, EzyTutorError> {
+    post_new_course_db(&app_state.db, new_course.into()?)
         .await
         .map(|course| HttpResponse::Ok().json(course))
 }
+
+
+// curl -X DELETE http://localhost:3000/courses/1/6
+pub async fn delete_course(app_state: web::Data<AppState>, path: web::Path<(i32, i32)>) -> Result<HttpResponse, EzyTutorError> {
+    let (tutor_id, course_id) = path.into_inner();
+    delete_course_db(&app_state.db, tutor_id, course_id)
+        .await
+        .map(|resp| HttpResponse::Ok().json(resp))
+}
+
+/*
+curl -X PUT localhost:3000/courses/1/5 -H "Content-Type: application/json"  -d '{"course_name":"Valid course 3", "course_duration":"Its a long, long course"}'
+*/
+pub async fn update_course_details(
+    app_state: web::Data<AppState>,
+    update_course: web::Json<UpdateCourse>,
+    path: web::Path<(i32, i32)>,
+) -> Result<HttpResponse, EzyTutorError> {
+    let (tutor_id, course_id) = path.into_inner();
+    update_course_details_db(&app_state.db, tutor_id, course_id, update_course.into())
+        .await
+        .map(|course| HttpResponse::Ok().json(course))
+}
+
 
 #[cfg(test)]
 mod tests {
@@ -41,6 +63,7 @@ mod tests {
     use std::env;
     use std::sync::Mutex;
 
+    // 한 강사에 대한 모든 강의 목록을 얻는다.
     #[actix_rt::test]
     async fn get_all_courses_success() {
         dotenv().ok();
@@ -56,6 +79,7 @@ mod tests {
         assert_eq!(resp.status(), StatusCode::OK);
     }
 
+    // 유효한 강의 id에 대한 모든 강의 상세 정보를 얻는다.
     #[actix_rt::test]
     async fn get_course_detail_test() {
         dotenv().ok();
