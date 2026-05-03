@@ -13,7 +13,7 @@ pub fn course_routes(cfg: &mut web::ServiceConfig) {
             .route("/{tutor_id}/{course_id}", web::get().to(get_course_details))
             .route(
                 "/{tutor_id}/{course_id}",
-                web::put().to(update_course_detail),
+                web::put().to(update_course_details),
             )
             .route("/{tutor_id}/{course_id}", web::delete().to(delete_course)),
     );

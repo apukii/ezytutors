@@ -11,7 +11,7 @@ pub struct Course {
     pub course_format: Option<String>,
     pub course_structure: Option<String>,
     pub course_duration: Option<String>,
-    pub course_price: Option<String>,
+    pub course_price: Option<i32>,
     pub course_language: Option<String>,
     pub course_level: Option<String>,
     pub posted_time: Option<NaiveDateTime>,
@@ -25,7 +25,7 @@ pub struct CreateCourse {
     pub course_format: Option<String>,
     pub course_structure: Option<String>,
     pub course_duration: Option<String>,
-    pub course_price: Option<String>,
+    pub course_price: Option<i32>,
     pub course_language: Option<String>,
     pub course_level: Option<String>,
 }
@@ -37,7 +37,7 @@ pub struct UpdateCourse {
     pub course_format: Option<String>,
     pub course_structure: Option<String>,
     pub course_duration: Option<String>,
-    pub course_price: Option<String>,
+    pub course_price: Option<i32>,
     pub course_language: Option<String>,
     pub course_level: Option<String>,
 }
@@ -53,7 +53,7 @@ impl From<web::Json<CreateCourse>> for CreateCourse {
             course_level: new_course.course_level.clone(),
             course_duration: new_course.course_duration.clone(),
             course_language: new_course.course_language.clone(),
-            course_price: new_course.course_price.clone(),
+            course_price: new_course.course_price,
         }
     }
 }
@@ -68,7 +68,7 @@ impl From<web::Json<UpdateCourse>> for UpdateCourse {
             course_level: update_course.course_level.clone(),
             course_duration: update_course.course_duration.clone(),
             course_language: update_course.course_language.clone(),
-            course_price: update_course.course_price.clone(),
+            course_price: update_course.course_price,
         }
     }
 }
